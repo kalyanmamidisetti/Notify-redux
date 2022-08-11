@@ -1,43 +1,21 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import { makeStyles } from "@mui/styles";
+import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
+import Grid from "@mui/material/Grid";
 //LOCAL IMPORTS
-import { showSnackBar } from "../Store/AlertMessages/actionCreator";
-
-//FOR NOTIFICATION VARIANT TYPES
-const notifyTypes = [
-  {
-    value: "success",
-    label: "Success",
-  },
-  {
-    value: "warning",
-    label: "Warning",
-  },
-  {
-    value: "normal",
-    label: "Normal",
-  },
-  {
-    value: "error",
-    label: "Error",
-  },
-  {
-    value: "info",
-    label: "Info",
-  },
-];
+import { showNotification } from "../Store/NotificationMessages/actionCreator";
+import ButtonCustom from "../Shared/Buttons/button";
+import { notifyTypes } from "../Helpers/configs";
 
 const useStlyes = makeStyles((theme) => ({
   paperWrap: {
-    margin: "auto",
-    width: "500px",
+    margin: "20px 20px 20px 0px",
+    maxWidth: "700px",
     borderRadius: "10px",
     padding: "20px",
     alignContent: "center",
@@ -50,19 +28,19 @@ const useStlyes = makeStyles((theme) => ({
     fontSize: "20px",
     marginBottom: "20px",
   },
-  addBtnWrap: {
-    color: "#ffffff",
-    textTransform: "none",
-    margin: "20px",
-  },
-  clsBtnWrap: {
-    color: "#2e8eec",
-    textTransform: "none",
+  btnsHead: {
+    display: "flex",
+    justifyContent: "flex-end",
   },
 }));
 
 function AddNotification(props) {
   const classes = useStlyes();
+  const oldNotifcation =
+    props &&
+    props.alertReducer &&
+    props.alertReducer.notifications &&
+    props.alertReducer.notifications;
   const [notifyMessage, setNotifyMessage] = useState("");
   const [notifyType, setNotifyType] = useState("");
   const [notifyDur, setNotifyDur] = useState("");
@@ -82,23 +60,29 @@ function AddNotification(props) {
     setNotifyDur(event.target.value);
   };
 
+  //FOR CLEARING THE ADDED VALUES
+  const clearValues = () => {
+    setNotifyMessage("");
+    setNotifyType("");
+    setNotifyDur("");
+  };
+
   //ON ADD NOTIFICATION
   const onAddNotification = () => {
-    let notificationsDisplay = [];
+    let notificationsDisplay = [...oldNotifcation];
     let newSnack = {
-      state: true,
       timeout: Number(notifyDur),
       type: notifyType,
       message: notifyMessage,
-      key: new Date().getTime + Math.random(),
+      id: new Date().getTime() + Math.random(),
     };
-
-    notificationsDisplay = [...notificationsDisplay];
     notificationsDisplay.push(newSnack);
-    props.showSnackBar(notificationsDisplay);
+    props.showNotification(notificationsDisplay);
+
+    clearValues();
   };
 
-  //ON CLOSE FORM
+  //ON CLOSE ADD FORM
   const onCloseForm = () => {
     props.closeNotifyForm();
   };
@@ -113,74 +97,87 @@ function AddNotification(props) {
         onSubmit={onAddNotification}
         autoComplete="off"
         sx={{
-          "& .MuiTextField-root": { m: 1, width: "25ch" },
+          "& .MuiTextField-root": { m: 1, minWidth: "25ch" },
         }}
       >
-        <TextField
-          id="notifyMessage"
-          label="Notification Message"
-          variant="outlined"
-          value={notifyMessage}
-          onChange={onTitleChange}
-          required
-          helperText="Please add notification message"
-        />
-        <TextField
-          id="notifytype"
-          label="Notification Type"
-          variant="outlined"
-          select
-          value={notifyType}
-          onChange={onTypeChange}
-          required
-          helperText="Please select notification type"
-        >
-          {notifyTypes &&
-            notifyTypes.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-        </TextField>
-        <TextField
-          id="notifydur"
-          label="Notification Duration"
-          type="number"
-          variant="outlined"
-          helperText="Please add autohide duration"
-          value={notifyDur}
-          onChange={onDurationChange}
-          required
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+            <TextField
+              style={{ width: "96%" }}
+              id="notifyMessage"
+              label="Notification Message"
+              variant="outlined"
+              value={notifyMessage}
+              onChange={onTitleChange}
+              multiline
+              rows={3}
+              size="small"
+              required
+              helperText="Please add notification message"
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+            <TextField
+              id="notifytype"
+              label="Notification Type"
+              variant="outlined"
+              select
+              value={notifyType}
+              onChange={onTypeChange}
+              required
+              helperText="Please select notification type"
+            >
+              {notifyTypes &&
+                notifyTypes.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+            <TextField
+              id="notifydur"
+              label="Notification Duration"
+              type="number"
+              variant="outlined"
+              helperText="Please add autohide duration"
+              value={notifyDur}
+              onChange={onDurationChange}
+              required
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            md={12}
+            lg={12}
+            xl={12}
+            className={classes.btnsHead}
+          >
+            <ButtonCustom
+              onClick={onAddNotification}
+              disabled={!notifyMessage || !notifyType || notifyDur <= 0}
+              label="Add"
+            />
+            <ButtonCustom onClick={onCloseForm} label="Close" variant="text" />
+          </Grid>
+        </Grid>
       </Box>
-
-      <Button
-        className={classes.addBtnWrap}
-        variant="contained"
-        onClick={onAddNotification}
-        disabled={!notifyMessage || !notifyType || !notifyDur}
-      >
-        Add
-      </Button>
-      <Button
-        className={classes.clsBtnWrap}
-        onClick={() => {
-          onCloseForm();
-        }}
-      >
-        Close
-      </Button>
     </Paper>
   );
 }
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+    alertReducer: state.alertReducer,
+  };
 };
 
-export default connect(mapStateToProps, { showSnackBar })(
+export default connect(mapStateToProps, { showNotification })(
   React.memo(AddNotification)
 );

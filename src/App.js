@@ -1,51 +1,33 @@
 import React from "react";
-import Stack from "@mui/material/Stack";
-import { connect } from "react-redux";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
+import { makeStyles } from "@mui/styles";
 //LOCAL IMPORTS
-import SnackBarAlerts from "./Shared/AlertMessages/snackBarAlerts";
-import { showSnackBar } from "./Store/AlertMessages/actionCreator";
-import NotificationStack from "./Components/notificationStack";
+import MainLayout from "./MainLayout";
+
+const useStlyes = makeStyles((theme) => ({
+  roor: {
+    fontFamily: "Arial, Helvetica, sans-serif",
+    textAlign: "center",
+  },
+}));
 
 const cahce = createCache({
   key: "css",
   prepend: true,
 });
 
-function App(props) {
-  const alertReducer =
-    props &&
-    props.alertReducer &&
-    props.alertReducer.notifications &&
-    props.alertReducer.notifications;
+function App() {
+  const classes = useStlyes();
   return (
     <CacheProvider value={cahce}>
       <StyledEngineProvider injectFirst>
-        <div className="App">
-          <NotificationStack />
-          <Stack
-            direction="column"
-            justifyContent="center"
-            alignItems="flex-end"
-            spacing={3}
-          >
-            {alertReducer &&
-              alertReducer.map((data, index) => {
-                return <SnackBarAlerts {...data} key={index} />;
-              })}
-          </Stack>
+        <div className={classes.root}>
+          <MainLayout />
         </div>
       </StyledEngineProvider>
     </CacheProvider>
   );
 }
-
-const mapStateToProps = (state) => {
-  return {
-    alertReducer: state.alertReducer,
-  };
-};
-
-export default connect(mapStateToProps, { showSnackBar })(App);
+export default App;

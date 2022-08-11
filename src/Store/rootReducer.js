@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 //LOCAL IMPORTS
-import alertReducer from "./AlertMessages/reducer";
+import alertReducer from "./NotificationMessages/reducer";
 
 export default combineReducers({
   alertReducer,
