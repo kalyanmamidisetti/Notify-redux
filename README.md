@@ -8,6 +8,7 @@ Notifications Stack
 - [Technologies](#technologies)
 - [Installation and Setup](#installtaion-and-setup)
 - [Node Version](#Required-node-version)
+- [Deployment](#Deployement-info)
 - [Credits](#credits)
 
 ## About The App
@@ -46,6 +47,10 @@ To Visit App:
 ## Node Version
 
 Requires Node version of 12.18.0 or above
+
+## Deployment
+
+https://notificationstack.netlify.app/
 
 ## Credits
 
